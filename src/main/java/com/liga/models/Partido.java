@@ -1,5 +1,6 @@
 package com.liga.models;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Partido {
@@ -17,8 +18,7 @@ public class Partido {
         this.golesLocal = golesLocal;
         this.golesVisitante = golesVisitante;
     }
-    public void registrarGoles(){
-        Scanner input = new Scanner(System.in);
+    public void registrarGoles(Scanner input){
         System.out.println(String.format("Ingresa la cantidad de goles de %s", this.equipoLocal.getNombreEquipo()));
         this.golesLocal = input.nextInt();
         System.out.println(String.format("Ingresa la cantidad de goles de %s", this.equipoVisitante.getNombreEquipo()));
@@ -43,6 +43,36 @@ public class Partido {
         this.equipoLocal.setGC(this.equipoLocal.getGC()+golesVisitante);
         this.equipoVisitante.setGF(this.equipoVisitante.getGF()+golesVisitante);
         this.equipoVisitante.setGC(this.equipoVisitante.getGC()+golesLocal);
+    }
+    public void registrarPartido(ArrayList<Equipo> equipoTemporal, Scanner input, ArrayList<Partido> partidos, ArrayList<Equipo> equipos){
+        System.out.println("Elige el equipo que es local");
+        for (int i = 0; i < equipoTemporal.size(); i++) {
+            System.out.println(String.format("%d. %s", i+1, equipoTemporal.get(i).getNombreEquipo()));
+        }
+        int elegidoLocal = input.nextInt()-1;
+        this.setEquipoLocal(equipoTemporal.get(elegidoLocal));
+        equipoTemporal.remove(elegidoLocal);
+        System.out.println("Elige el equipo que es visitante");
+        for (int i = 0; i < equipoTemporal.size(); i++) {
+            System.out.println(String.format("%d. %s", i+1, equipoTemporal.get(i).getNombreEquipo()));
+        }
+        int elegidoVisitante = input.nextInt()-1;
+        input.nextLine();
+        this.setEquipoVisitante(equipoTemporal.get(elegidoVisitante));
+        System.out.println("Ingresa la fecha en la que se realizo el partido (DD/MM/AAAA)");
+        String fecha = input.nextLine();
+        this.setFecha(fecha);
+        this.registrarGoles(input);
+        System.out.println(this.getEquipoLocal().getPG());
+        for (int i = 0; i < equipos.size(); i++) {
+            if (equipos.get(i).getNombreEquipo().equals(this.getEquipoLocal().getNombreEquipo())) {
+                equipos.set(i, this.getEquipoLocal());
+            }
+            if (equipos.get(i).getNombreEquipo().equals(this.getEquipoVisitante().getNombreEquipo())) {
+                equipos.set(i, this.getEquipoVisitante());
+            }
+        }
+        partidos.add(this);
     }
     public Equipo getEquipoLocal() {
         return equipoLocal;

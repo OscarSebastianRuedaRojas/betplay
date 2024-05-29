@@ -2,15 +2,15 @@ package com.liga;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import com.liga.models.Equipo;
 import com.liga.models.Partido;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException {
         Scanner input = new Scanner(System.in);
         ArrayList<Equipo> equipos = new ArrayList<>();
         ArrayList<Partido> partidos = new ArrayList<>();
+        ArrayList<Equipo> equipoTemporal = new ArrayList<>();
         boolean seguir = true;
         while (seguir) {
             System.out.println("Bienvenido a la Liga Betplay");
@@ -29,40 +29,17 @@ public class Main {
                         System.out.println("Ingresa el nombre del equipo que deseas registrar");
                         String nombreEquipoNuevo = input.nextLine();
                         Equipo equipoNuevo = new Equipo(nombreEquipoNuevo);
-                        equipos.add(equipoNuevo);
-                        System.out.println("Equipo agregado exitosamente.");
-                        agregarOtroEquipo = confirmacionFuncion("Quieres agregar otro equipo?");
+                        equipoNuevo.registrarEquipo(equipos);
+                        agregarOtroEquipo = confirmacionFuncion("Quieres agregar otro equipo?", input);
+                        input.nextLine();
                     } while (agregarOtroEquipo);
                     break; 
                 case 2:
-                    System.out.println("Elige el equipo que es local");
-                    for (int i = 0; i < equipos.size(); i++) {
-                        System.out.println(String.format("%d. %s", i+1, equipos.get(i).getNombreEquipo()));
-                    }
-                    int elegidoLocal = input.nextInt()-1;
+                for (Equipo equipo : equipos) {
+                    equipoTemporal.add((Equipo) equipo.clone());
+                }
                     Partido partido1 = new Partido();
-                    partido1.setEquipoLocal(equipos.get(elegidoLocal));
-                    System.out.println("Elige el equipo que es visitante");
-                    for (int i = 0; i < equipos.size(); i++) {
-                        System.out.println(String.format("%d. %s", i+1, equipos.get(i).getNombreEquipo()));
-                    }
-                    int elegidoVisitante = input.nextInt()-1;
-                    input.nextLine();
-                    partido1.setEquipoVisitante(equipos.get(elegidoVisitante));
-                    System.out.println("Ingresa la fecha en la que se realizo el partido (DD/MM/AAAA)");
-                    String fecha = input.nextLine();
-                    partido1.setFecha(fecha);
-                    partido1.registrarGoles();
-                    System.out.println(partido1.getEquipoLocal().getPG());
-                    for (int i = 0; i < equipos.size(); i++) {
-                        if (equipos.get(i).getNombreEquipo().equals(partido1.getEquipoLocal().getNombreEquipo())) {
-                            equipos.set(i, partido1.getEquipoLocal());
-                        }
-                        if (equipos.get(i).getNombreEquipo().equals(partido1.getEquipoVisitante().getNombreEquipo())) {
-                            equipos.set(i, partido1.getEquipoVisitante());
-                        }
-                    }
-                    partidos.add(partido1);
+                    partido1.registrarPartido(equipoTemporal, input, partidos, equipos);
                     break;
                 case 3:
                     System.out.println("Submenú de Reportes:");
@@ -76,17 +53,20 @@ public class Main {
                     input.nextLine();
                     switch (opcionReportes) {
                         case 1:
-                            ArrayList<Equipo> equiposGoles = equipos;
+                            ArrayList<Equipo> equiposGoles = new ArrayList<>();
+                            copiaArrayList(equipos, equiposGoles);
                             quicksortGF(equiposGoles, 0, equiposGoles.size()-1);
                             System.out.println(String.format("el equipo con mas goles en el torneo es %s", equiposGoles.get(equiposGoles.size()-1).getNombreEquipo()));
                             break;
                         case 2:
-                            ArrayList<Equipo> equiposPuntos = equipos;
+                            ArrayList<Equipo> equiposPuntos = new ArrayList<>();
+                            copiaArrayList(equipos, equiposPuntos);
                             quicksortPuntos(equiposPuntos, 0, equiposPuntos.size()-1);
                             System.out.println(String.format("el equipo con mas puntos en el torneo es %s", equiposPuntos.get(equiposPuntos.size()-1).getNombreEquipo()));
                             break;
                         case 3:
-                            ArrayList<Equipo> equiposPG = equipos;
+                            ArrayList<Equipo> equiposPG = new ArrayList<>();
+                            copiaArrayList(equipos, equiposPG);
                             quicksortPG(equiposPG, 0, equiposPG.size()-1);
                             System.out.println(String.format("el equipo con mas puntos en el torneo es %s", equiposPG.get(equiposPG.size()-1).getNombreEquipo()));
                             break;
@@ -110,12 +90,17 @@ public class Main {
                     }
                     break;
                 case 4:
-                    ArrayList<Equipo> equiposPuntos = equipos;
+                    ArrayList<Equipo> equiposPuntos = new ArrayList<>();
+                    copiaArrayList(equipos, equiposPuntos);
                     quicksortPuntos(equiposPuntos, 0, equiposPuntos.size()-1);
-                    System.out.println("Club                 PJ    PG   PE   PP   GF   GC   DG    Pts");
-                    for (int i = equiposPuntos.size()-1; i >= 0 ; i--) {
-                        System.out.println(String.format("%s                 %d    %d    %d    %d    %d    %d    %d    %d    ", equiposPuntos.get(i).getNombreEquipo(), equiposPuntos.get(i).getPJ(), equiposPuntos.get(i).getPG(), equiposPuntos.get(i).getPE(), equiposPuntos.get(i).getPP(), equiposPuntos.get(i).getGF(), equiposPuntos.get(i).getGC(), equiposPuntos.get(i).getGF()-equiposPuntos.get(i).getGC(), equiposPuntos.get(i).getPuntos()) );
+                    for (int i = 0; i < equiposPuntos.size(); i++) {
+                        System.out.println(equiposPuntos.get(i).getNombreEquipo());
                     }
+                    System.out.println(String.format("%-20s %4s %4s %4s %4s %4s %4s %4s %4s", "Club", "PJ", "PG", "PE", "PP", "GF", "GC", "DG", "Pts"));
+                    for (int i = equiposPuntos.size()-1; i >= 0 ; i--) {
+                        System.out.println(String.format("%-20s %4d %4d %4d %4d %4d %4d %4d %4d", equiposPuntos.get(i).getNombreEquipo(), equiposPuntos.get(i).getPJ(), equiposPuntos.get(i).getPG(), equiposPuntos.get(i).getPE(), equiposPuntos.get(i).getPP(), equiposPuntos.get(i).getGF(), equiposPuntos.get(i).getGC(), equiposPuntos.get(i).getGF()-equiposPuntos.get(i).getGC(), equiposPuntos.get(i).getPuntos()) );
+                    }
+                    input.nextLine();
                     break;
                 case 5:
                     seguir = false;
@@ -124,11 +109,9 @@ public class Main {
                     break;
         }
         }
-        
         input.close();
     }
-    public static boolean confirmacionFuncion(String mensaje){
-        Scanner input = new Scanner(System.in);
+    public static boolean confirmacionFuncion(String mensaje, Scanner input){
         String[] confirmaciones = {"Si", "No"};
         System.out.println("Desea agregar otro equipo?");
             for (int i = 0; i < confirmaciones.length; i++) {
@@ -214,6 +197,11 @@ public class Main {
         }
         if (j+1 < der) {
             quicksortPG(equipos, j+1, der);
+        }
+    }
+    public static void copiaArrayList(ArrayList<Equipo> equipos, ArrayList<Equipo> equipoCopia) throws CloneNotSupportedException{
+        for (Equipo equipo : equipos) {
+            equipoCopia.add((Equipo) equipo.clone());
         }
     }
 }

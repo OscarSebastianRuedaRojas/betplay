@@ -1,6 +1,8 @@
 package com.liga.models;
 
-public class Equipo {
+import java.util.ArrayList;
+
+public class Equipo implements Cloneable {
     String nombreEquipo;
     int PJ;
     int PG;
@@ -10,7 +12,18 @@ public class Equipo {
     int GC;
     int TP;
     int puntos;
+    
     public Equipo(){
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            // Esto no debería ocurrir porque estamos implementando Cloneable
+            throw new RuntimeException(e);
+        }
     }
 
     public Equipo(String nombreEquipo) {
@@ -23,6 +36,11 @@ public class Equipo {
         this.GC = 0;
         this.TP = 0;
         this.puntos = 0;
+    }
+    
+    public void registrarEquipo(ArrayList<Equipo> equipos){
+        equipos.add(this);
+        System.out.println("Equipo agregado exitosamente.");
     }
 
     public String getNombreEquipo() {
@@ -81,5 +99,4 @@ public class Equipo {
     public void setPuntos(int puntos) {
         this.puntos = puntos;
     }
-    
 }
