@@ -63,7 +63,6 @@ public class Partido {
         String fecha = input.nextLine();
         this.setFecha(fecha);
         this.registrarGoles(input);
-        System.out.println(this.getEquipoLocal().getPG());
         for (int i = 0; i < equipos.size(); i++) {
             if (equipos.get(i).getNombreEquipo().equals(this.getEquipoLocal().getNombreEquipo())) {
                 equipos.set(i, this.getEquipoLocal());
