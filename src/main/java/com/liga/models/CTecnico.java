@@ -3,10 +3,16 @@ package com.liga.models;
 public class CTecnico extends Team{
     String rol;
     String idFederacion;
-    public CTecnico(int id, String nombres, String apellidos, int edad, String rol, String idFederacion) {
-        super(id, nombres, apellidos, edad);
+    
+    
+    public CTecnico(int id, String nombres, String apellidos, int edad, Equipo equipo, String rol,
+            String idFederacion) {
+        super(id, nombres, apellidos, edad, equipo);
         this.rol = rol;
         this.idFederacion = idFederacion;
+    }
+    public CTecnico(int id, String nombres, String apellidos, int edad, Equipo equipo) {
+        super(id, nombres, apellidos, edad, equipo);
     }
     public String getRol() {
         return rol;

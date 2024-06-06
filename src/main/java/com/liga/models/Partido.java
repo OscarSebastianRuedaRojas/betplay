@@ -18,11 +18,73 @@ public class Partido {
         this.golesLocal = golesLocal;
         this.golesVisitante = golesVisitante;
     }
-    public void registrarGoles(Scanner input){
+    public void registrarGoles(Scanner input, ArrayList<Jugador> jugadores){
         System.out.println(String.format("Ingresa la cantidad de goles de %s", this.equipoLocal.getNombreEquipo()));
         this.golesLocal = input.nextInt();
+        int elegidoLocal;
+        for (int i = 0; i < this.getGolesLocal(); i++) {
+            System.out.println(String.format("Selecciona quien marco el %d gol", i+1));
+            for (int j = 0; j < jugadores.size(); j++) {
+                if (jugadores.get(j).getEquipo()==this.getEquipoLocal()) {
+                    System.out.println(String.format("%d. %s %s", j+1, jugadores.get(j).getNombres(), jugadores.get(i).getApellidos()));
+                }
+            }
+            elegidoLocal = input.nextInt()-1;
+            jugadores.get(elegidoLocal).setGoles(jugadores.get(elegidoLocal).getGoles()+1);
+        }
         System.out.println(String.format("Ingresa la cantidad de goles de %s", this.equipoVisitante.getNombreEquipo()));
         this.golesVisitante = input.nextInt();
+        int elegidoVisitante;
+        for (int i = 0; i < this.getGolesVisitante(); i++) {
+            System.out.println(String.format("Selecciona quien marco el %d gol", i+1));
+            for (int j = 0; j < jugadores.size(); j++) {
+                if (jugadores.get(j).getEquipo()==this.getEquipoVisitante()) {
+                    System.out.println(String.format("%d. %s %s", j+1, jugadores.get(j).getNombres(), jugadores.get(i).getApellidos()));
+                }
+            }
+            elegidoVisitante = input.nextInt()-1;
+            jugadores.get(elegidoVisitante).setGoles(jugadores.get(elegidoVisitante).getGoles()+1);
+        }
+        int tarjetaAmarilla;
+        while (true) {
+            System.out.println("Ingresa el jugador que obtuvo amarilla");
+            for (int i = 0; i < jugadores.size(); i++) {
+                if (jugadores.get(i).getEquipo()== this.equipoLocal || jugadores.get(i).getEquipo()==  this.equipoVisitante) {
+                    System.out.println(String.format("%d. %s %s", i+1, jugadores.get(i).getNombres(), jugadores.get(i).getApellidos()));
+                }
+            }
+            System.out.println("0. Si no hubo ninguno");
+            tarjetaAmarilla = input.nextInt()-1;
+            jugadores.get(tarjetaAmarilla).setTa(jugadores.get(tarjetaAmarilla).getTa()+1);
+            if (tarjetaAmarilla==0) {
+                break;
+            }
+            System.out.println("1. Desea ingresar otra tarjeta amarilla \n 2. Desea salir ");
+            int salir = input.nextInt();
+            if (salir==2) {
+                break;
+            }
+        }
+        int tarjetaRoja;
+        while (true) {
+            System.out.println("Ingresa el jugador que obtuvo Roja");
+            for (int i = 0; i < jugadores.size(); i++) {
+                if (jugadores.get(i).getEquipo()== this.equipoLocal || jugadores.get(i).getEquipo()==  this.equipoVisitante) {
+                    System.out.println(String.format("%d. %s %s", i+1, jugadores.get(i).getNombres(), jugadores.get(i).getApellidos()));
+                }
+            }
+            System.out.println("0. Si no hubo ninguno");
+            tarjetaRoja = input.nextInt()-1;
+            jugadores.get(tarjetaRoja).setTa(jugadores.get(tarjetaRoja).getTa()+1);
+            if (tarjetaRoja==0) {
+                break;
+            }
+            System.out.println("1. Desea ingresar otra tarjeta Roja \n 2. Desea salir ");
+            int salir = input.nextInt();
+            if (salir==2) {
+                break;
+            }
+        }
         if (golesLocal>golesVisitante) {
             this.equipoLocal.setPuntos(this.equipoLocal.getPuntos()+3);
             this.equipoLocal.setPG(this.equipoLocal.getPG()+1);
@@ -44,7 +106,7 @@ public class Partido {
         this.equipoVisitante.setGF(this.equipoVisitante.getGF()+golesVisitante);
         this.equipoVisitante.setGC(this.equipoVisitante.getGC()+golesLocal);
     }
-    public void registrarPartido(ArrayList<Equipo> equipoTemporal, Scanner input, ArrayList<Partido> partidos, ArrayList<Equipo> equipos){
+    public void registrarPartido(ArrayList<Equipo> equipoTemporal, Scanner input, ArrayList<Partido> partidos, ArrayList<Equipo> equipos, ArrayList<Jugador> jugadores){
         System.out.println("Elige el equipo que es local");
         for (int i = 0; i < equipoTemporal.size(); i++) {
             System.out.println(String.format("%d. %s", i+1, equipoTemporal.get(i).getNombreEquipo()));
@@ -62,7 +124,7 @@ public class Partido {
         System.out.println("Ingresa la fecha en la que se realizo el partido (DD/MM/AAAA)");
         String fecha = input.nextLine();
         this.setFecha(fecha);
-        this.registrarGoles(input);
+        this.registrarGoles(input, jugadores);
         for (int i = 0; i < equipos.size(); i++) {
             if (equipos.get(i).getNombreEquipo().equals(this.getEquipoLocal().getNombreEquipo())) {
                 equipos.set(i, this.getEquipoLocal());
